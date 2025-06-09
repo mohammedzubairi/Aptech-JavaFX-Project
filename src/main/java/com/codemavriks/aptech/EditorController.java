@@ -1,3 +1,38 @@
+/**
+ * File Mana - Modern Text Editor
+ * Main Controller Class (MVC Pattern)
+ * 
+ * This class serves as the central controller in the MVC architecture, coordinating
+ * between the UI components (TextEditor, SidePanel) and the business logic (FileService).
+ * It manages the complete application workflow including file operations, text processing,
+ * auto-save functionality, and user interaction handling.
+ * 
+ * Key Responsibilities:
+ * - Coordinate between UI components and business logic
+ * - Handle file operations (create, open, save, delete, rename)
+ * - Manage text processing (word replacement, content reversal, byte conversion)
+ * - Implement auto-save functionality with configurable intervals
+ * - Provide error handling and user feedback
+ * - Manage application state and lifecycle
+ * 
+ * Architecture Pattern: Model-View-Controller (MVC)
+ * - View: TextEditor and SidePanel components
+ * - Model: FileService and file system data
+ * - Controller: This class (EditorController)
+ * 
+ * Design Patterns Used:
+ * - Observer Pattern: Event listeners for component communication
+ * - Command Pattern: Action handlers for user operations
+ * - Strategy Pattern: Different file operation strategies
+ * 
+ * @author NAJM ALDEEN MOHAMMED SALEH HAMOD AL-ZORQAH
+ * @student_id Student1554163
+ * @course Advanced Java Programming with JavaFX
+ * @institution Aptech Computer Education
+ * @university Alnasser University
+ * @version 1.0
+ * @since 2025-05-20
+ */
 package com.codemavriks.aptech;
 
 import com.codemavriks.aptech.components.TextEditor;
@@ -15,89 +50,254 @@ import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Main Controller class for File Mana text editor application.
+ * 
+ * This class extends HBox to serve as both the main layout container and the
+ * central controller. It coordinates between the UI components and file services,
+ * handling user interactions and maintaining application state.
+ * 
+ * Component Architecture:
+ * ┌─────────────────────────────────────────────────────────┐
+ * │                EditorController (HBox)                  │
+ * ├─────────────────────┬───────────────────────────────────┤
+ * │     SidePanel       │         TextEditor                │
+ * │   (30% width)       │       (70% width)                 │
+ * │                     │                                   │
+ * │ - File Navigator    │ - Text Editing Area               │
+ * │ - Control Panel     │ - Syntax Highlighting             │
+ * │ - Status Display    │ - Auto-save Indicators            │
+ * └─────────────────────┴───────────────────────────────────┘
+ * 
+ * Event Flow:
+ * User Action → SidePanel/TextEditor → EditorController → FileService → File System
+ *                                   ↓
+ * UI Updates ← Status Updates ← Controller ← Service Response
+ */
 public class EditorController extends HBox {
+    
+    // ============================================================================
+    // COMPONENT REFERENCES (MVC Architecture)
+    // ============================================================================
+    
+    /**
+     * Text editing component (View in MVC).
+     * Handles all text input, editing, and display functionality.
+     */
     private final TextEditor textEditor;
+    
+    /**
+     * Side panel component (View in MVC).
+     * Contains file navigator, control buttons, and status display.
+     */
     private final SidePanel sidePanel;
+    
+    /**
+     * File service component (Model in MVC).
+     * Handles all file system operations and business logic.
+     */
     private final FileService fileService;
+    
+    // ============================================================================
+    // STATE MANAGEMENT VARIABLES
+    // ============================================================================
+    
+    /**
+     * Timer for auto-save functionality.
+     * Runs in background thread to periodically save unsaved changes.
+     */
     private Timer autoSaveTimer;
+    
+    /**
+     * Base name of the currently open file set.
+     * Used to track which file set is currently being edited.
+     * Format: "filename" (without extension or suffix)
+     */
     private String currentFileBaseName = null;
+    
+    /**
+     * Flag to control auto-save functionality.
+     * Can be disabled for performance or user preference.
+     */
     private boolean isAutoSaveEnabled = true;
 
+    // ============================================================================
+    // CONSTRUCTOR AND INITIALIZATION
+    // ============================================================================
+
+    /**
+     * Constructor - Initializes the main controller and all components.
+     * 
+     * Initialization Sequence:
+     * 1. Create UI components (TextEditor, SidePanel)
+     * 2. Create business logic service (FileService)
+     * 3. Set up responsive layout
+     * 4. Configure event handlers for component communication
+     * 5. Start auto-save timer
+     * 6. Apply CSS styling
+     */
     public EditorController() {
+        // Initialize core components
         this.textEditor = new TextEditor();
-        this.sidePanel = new SidePanel("Created files/");
+        this.sidePanel = new SidePanel("Created files/");  // Default file directory
         this.fileService = new FileService();
         
+        // Set up the UI layout and component relationships
         setupLayout();
+        
+        // Configure event handlers for component communication
         setupEventHandlers();
+        
+        // Start auto-save functionality
         setupAutoSave();
         
+        // Apply CSS styling for the main layout
         getStyleClass().add("main-layout");
     }
 
+    // ============================================================================
+    // LAYOUT CONFIGURATION
+    // ============================================================================
+
+    /**
+     * Sets up the responsive layout for the main application window.
+     * 
+     * Layout Strategy:
+     * - SidePanel: Fixed 30% width with file navigator and controls
+     * - TextEditor: Flexible 70% width that grows with window resize
+     * - No spacing between components for seamless appearance
+     * 
+     * Responsive Behavior:
+     * - TextEditor grows/shrinks with window resize
+     * - SidePanel maintains consistent width
+     * - Minimum window size enforced by MainApp
+     */
     private void setupLayout() {
-        // Set up responsive layout: 70% editor, 30% side panel
+        // Configure text editor to grow and fill available space
         HBox.setHgrow(textEditor, Priority.ALWAYS);
         
-        // Add components to layout
+        // Add components to layout in order: SidePanel, TextEditor
         getChildren().addAll(sidePanel, textEditor);
         
-        // Set spacing
+        // Set spacing to 0 for seamless appearance
         setSpacing(0);
     }
 
+    // ============================================================================
+    // EVENT HANDLER CONFIGURATION
+    // ============================================================================
+
+    /**
+     * Configures all event handlers for component communication.
+     * 
+     * This method sets up the Observer pattern implementation that allows
+     * components to communicate without tight coupling. It establishes:
+     * 
+     * 1. SidePanel event listeners for file operations
+     * 2. TextEditor event listeners for editor actions
+     * 3. FileService callbacks for async operations
+     * 4. Property change listeners for state synchronization
+     */
     private void setupEventHandlers() {
-        // Side panel events
+        // ========================================================================
+        // SIDE PANEL EVENT LISTENERS
+        // ========================================================================
+        
+        // Set up listener for side panel events using Observer pattern
         sidePanel.addSidePanelListener(new SidePanel.SidePanelListener() {
+            /**
+             * Handles new file creation requests from the side panel.
+             * @param baseName The base name for the new file set
+             */
             @Override
             public void onNewFileRequested(String baseName) {
                 handleNewFile(baseName);
             }
 
+            /**
+             * Handles save requests from the side panel.
+             */
             @Override
             public void onSaveRequested() {
                 handleSave();
             }
 
+            /**
+             * Handles word replacement requests from the side panel.
+             * @param wordIndex The 1-based position of the word to replace
+             * @param replacement The new word to insert
+             */
             @Override
             public void onWordReplaceRequested(int wordIndex, String replacement) {
                 handleWordReplacement(wordIndex, replacement);
             }
 
+            /**
+             * Handles file selection in the file navigator.
+             * @param file The selected file
+             */
             @Override
             public void onFileSelected(File file) {
                 handleFileSelection(file);
             }
 
+            /**
+             * Handles file open requests from the file navigator.
+             * @param file The file to open
+             */
             @Override
             public void onFileOpened(File file) {
                 handleFileOpen(file);
             }
 
+            /**
+             * Handles file deletion requests from the file navigator.
+             * @param file The file to delete
+             */
             @Override
             public void onFileDeleted(File file) {
                 handleFileDeleted(file);
             }
 
+            /**
+             * Handles file rename operations from the file navigator.
+             * @param oldFile The original file
+             * @param newFile The renamed file
+             */
             @Override
             public void onFileRenamed(File oldFile, File newFile) {
                 handleFileRenamed(oldFile, newFile);
             }
         });
 
-        // Text editor events
+        // ========================================================================
+        // TEXT EDITOR EVENT LISTENERS
+        // ========================================================================
+
+        // Handle save requests from text editor (Ctrl+S shortcut)
         textEditor.addEventHandler(TextEditor.SaveRequestEvent.SAVE_REQUEST, e -> handleSave());
+        
+        // Handle new file requests from text editor (Ctrl+N shortcut)
         textEditor.addEventHandler(TextEditor.NewFileRequestEvent.NEW_FILE_REQUEST, e -> showNewFileDialog());
 
-        // Track unsaved changes
+        // Track unsaved changes and update side panel status
         textEditor.hasUnsavedChangesProperty().addListener((obs, oldVal, newVal) -> {
             sidePanel.setHasUnsavedChanges(newVal);
         });
 
-        // File service auto-save callback
+        // ========================================================================
+        // FILE SERVICE CALLBACKS
+        // ========================================================================
+
+        // Set up callbacks for file service auto-save operations
         fileService.setAutoSaveCallback(new FileService.AutoSaveCallback() {
+            /**
+             * Called when auto-save completes successfully.
+             * @param baseName The base name of the saved file set
+             */
             @Override
             public void onAutoSave(String baseName) {
+                // Update UI on JavaFX Application Thread
                 Platform.runLater(() -> {
                     sidePanel.updateStatus("Auto-saved: " + baseName);
                     textEditor.markAsSaved();
@@ -105,8 +305,13 @@ public class EditorController extends HBox {
                 });
             }
 
+            /**
+             * Called when auto-save encounters an error.
+             * @param error The error message
+             */
             @Override
             public void onAutoSaveError(String error) {
+                // Update UI on JavaFX Application Thread
                 Platform.runLater(() -> {
                     sidePanel.updateStatus("Auto-save error: " + error);
                 });
@@ -114,88 +319,161 @@ public class EditorController extends HBox {
         });
     }
 
+    // ============================================================================
+    // AUTO-SAVE FUNCTIONALITY
+    // ============================================================================
+
+    /**
+     * Sets up the auto-save timer for periodic saving of unsaved changes.
+     * 
+     * Auto-save Strategy:
+     * - Runs every 30 seconds in a background daemon thread
+     * - Only saves if there are unsaved changes
+     * - Only saves if a file is currently open
+     * - Can be disabled via isAutoSaveEnabled flag
+     * - Updates UI on successful save
+     * - Provides error feedback on failure
+     * 
+     * Thread Safety:
+     * - Timer runs in background thread
+     * - UI updates are performed on JavaFX Application Thread using Platform.runLater
+     */
     private void setupAutoSave() {
-        // Auto-save every 30 seconds
-        autoSaveTimer = new Timer(true);
+        // Create daemon timer thread for auto-save
+        autoSaveTimer = new Timer(true);  // true = daemon thread
+        
+        // Schedule auto-save task to run every 30 seconds
         autoSaveTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                if (isAutoSaveEnabled && currentFileBaseName != null && textEditor.hasUnsavedChangesProperty().get()) {
+                // Check if auto-save should run
+                if (isAutoSaveEnabled && 
+                    currentFileBaseName != null && 
+                    textEditor.hasUnsavedChangesProperty().get()) {
+                    
+                    // Perform auto-save on JavaFX Application Thread
                     Platform.runLater(() -> {
                         try {
+                            // Get current content from text editor
                             String content = textEditor.getContent();
+                            
+                            // Save to all file variants (org, rev, byte)
                             fileService.updateFileSet(currentFileBaseName, content);
+                            
+                            // Update UI to reflect saved state
                             textEditor.markAsSaved();
                             sidePanel.updateStatus("Auto-saved: " + currentFileBaseName);
                             sidePanel.refreshFileNavigator();
+                            
                         } catch (IOException e) {
+                            // Handle auto-save errors gracefully
                             sidePanel.updateStatus("Auto-save failed: " + e.getMessage());
                         }
                     });
                 }
             }
-        }, 30000, 30000); // 30 seconds interval
+        }, 30000, 30000); // Initial delay: 30s, Repeat interval: 30s
     }
 
+    // ============================================================================
+    // FILE OPERATION HANDLERS
+    // ============================================================================
+
+    /**
+     * Handles new file creation with unsaved changes detection.
+     * 
+     * Process Flow:
+     * 1. Check for unsaved changes in current file
+     * 2. Prompt user to save/discard/cancel if changes exist
+     * 3. Generate unique file name if requested name exists
+     * 4. Create file set (org, rev, byte variants)
+     * 5. Update text editor with default content
+     * 6. Update UI and file navigator
+     * 7. Show success confirmation
+     * 
+     * @param baseName The base name for the new file set (without extension)
+     */
     private void handleNewFile(String baseName) {
-        // Check for unsaved changes
+        // ========================================================================
+        // STEP 1: CHECK FOR UNSAVED CHANGES
+        // ========================================================================
+        
         if (textEditor.hasUnsavedChangesProperty().get()) {
+            // Create confirmation dialog for unsaved changes
             Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
             confirmDialog.setTitle("Unsaved Changes");
             confirmDialog.setHeaderText("You have unsaved changes");
             confirmDialog.setContentText("Do you want to save your changes before creating a new file?");
             
-            // Apply dark theme to dialog
+            // Apply consistent dark theme to dialog
             com.codemavriks.aptech.MainApp.applyDarkThemeToAlert(confirmDialog);
             
+            // Create custom button types for user choice
             ButtonType saveButton = new ButtonType("Save");
             ButtonType discardButton = new ButtonType("Discard");
             ButtonType cancelButton = new ButtonType("Cancel");
             
             confirmDialog.getButtonTypes().setAll(saveButton, discardButton, cancelButton);
             
+            // Handle user's choice
             Optional<ButtonType> result = confirmDialog.showAndWait();
             if (result.isPresent()) {
                 if (result.get() == saveButton) {
+                    // Save current changes before proceeding
                     handleSave();
                 } else if (result.get() == cancelButton) {
-                    return; // Cancel operation
+                    // Cancel the new file operation
+                    return;
                 }
-                // If discard, continue with new file creation
+                // If discard was chosen, continue with new file creation
             }
         }
 
-        // Check if file already exists and create unique name
+        // ========================================================================
+        // STEP 2: GENERATE UNIQUE FILE NAME
+        // ========================================================================
+        
+        // Ensure the file name is unique to prevent conflicts
         String uniqueBaseName = getUniqueBaseName(baseName);
+        
+        // Notify user if name was modified
         if (!uniqueBaseName.equals(baseName)) {
             Alert infoAlert = new Alert(Alert.AlertType.INFORMATION);
             infoAlert.setTitle("File Name Modified");
             infoAlert.setHeaderText("File already exists");
             infoAlert.setContentText("A file with the name '" + baseName + "' already exists.\nCreated with name: " + uniqueBaseName);
             
-            // Apply dark theme to dialog
+            // Apply consistent theming
             com.codemavriks.aptech.MainApp.applyDarkThemeToAlert(infoAlert);
             
             infoAlert.showAndWait();
         }
 
-        // Clear the text editor content for new file
+        // ========================================================================
+        // STEP 3: CREATE FILE SET AND UPDATE UI
+        // ========================================================================
+
+        // Create default content for new file
         String defaultContent = "// New file: " + uniqueBaseName + "\n// Start typing your content here...";
 
         try {
+            // Create the file set (org, rev, byte variants)
             fileService.createFileSet(uniqueBaseName, defaultContent);
+            
+            // Update controller state
             currentFileBaseName = uniqueBaseName;
             fileService.setCurrentFileBaseName(uniqueBaseName);
             
-            // Clear and set default content in text editor
+            // Update text editor with new content
             textEditor.setContent(defaultContent);
             textEditor.setCurrentFilePath(fileService.getFilePath(uniqueBaseName, "org"));
             textEditor.markAsSaved();
             
+            // Update UI components
             sidePanel.updateStatus("Created file set: " + uniqueBaseName);
             sidePanel.refreshFileNavigator();
             
-            // Show success popup
+            // Show success confirmation
             Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
             successAlert.setTitle("File Created");
             successAlert.setHeaderText("File Set Created Successfully");
@@ -384,7 +662,7 @@ public class EditorController extends HBox {
             return;
         }
 
-        // Split content into words
+        // Split content into words while preserving original spacing and structure
         String[] words = content.split("\\s+");
         
         if (wordIndex < 1 || wordIndex > words.length) {
@@ -394,28 +672,88 @@ public class EditorController extends HBox {
             return;
         }
 
-        // Replace the word at the specified index
+        // Store the original word for feedback
         String originalWord = words[wordIndex - 1];
-        words[wordIndex - 1] = replacement;
         
-        // Reconstruct the content
-        String newContent = String.join(" ", words);
+        // Use regex to replace the specific word occurrence while preserving spacing
+        String newContent = replaceWordAtPosition(content, wordIndex, replacement);
         
         // Update the text editor
         textEditor.setContent(newContent);
         
-        sidePanel.updateStatus("Replaced word '" + originalWord + "' at position " + wordIndex + " with '" + replacement + "'");
+        // Save the changes to all files immediately
+        try {
+            fileService.updateFileSet(currentFileBaseName, newContent);
+            textEditor.markAsSaved(); // Mark as saved since we just saved
+            sidePanel.refreshFileNavigator();
+            sidePanel.updateStatus("Replaced word '" + originalWord + "' at position " + wordIndex + " with '" + replacement + "' and saved");
+            
+            // Show success message
+            Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+            successAlert.setTitle("Word Replaced");
+            successAlert.setHeaderText("Word Replacement Successful");
+            successAlert.setContentText("Replaced word '" + originalWord + "' at position " + wordIndex + " with '" + replacement + "'\nChanges have been saved to all files.");
+            
+            // Apply dark theme to dialog
+            com.codemavriks.aptech.MainApp.applyDarkThemeToAlert(successAlert);
+            
+            successAlert.showAndWait();
+            
+        } catch (IOException e) {
+            sidePanel.updateStatus("Word replaced but save failed: " + e.getMessage());
+            showErrorDialog("Save Error", "Word was replaced in the editor but failed to save to files: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Replace a word at a specific position while preserving original spacing and newlines
+     */
+    private String replaceWordAtPosition(String content, int wordIndex, String replacement) {
+        // Split content into words to count them
+        String[] words = content.split("\\s+");
         
-        // Show success message
-        Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-        successAlert.setTitle("Word Replaced");
-        successAlert.setHeaderText("Word Replacement Successful");
-        successAlert.setContentText("Replaced word '" + originalWord + "' at position " + wordIndex + " with '" + replacement + "'");
+        if (wordIndex < 1 || wordIndex > words.length) {
+            return content; // Return original if index is invalid
+        }
         
-        // Apply dark theme to dialog
-        com.codemavriks.aptech.MainApp.applyDarkThemeToAlert(successAlert);
+        // Get the target word
+        String targetWord = words[wordIndex - 1];
         
-        successAlert.showAndWait();
+        // Find and replace the specific occurrence while preserving whitespace
+        int currentWordCount = 0;
+        StringBuilder result = new StringBuilder();
+        int i = 0;
+        
+        while (i < content.length()) {
+            // Skip whitespace and add it to result
+            while (i < content.length() && Character.isWhitespace(content.charAt(i))) {
+                result.append(content.charAt(i));
+                i++;
+            }
+            
+            // If we've reached the end, break
+            if (i >= content.length()) {
+                break;
+            }
+            
+            // Extract the next word
+            int wordStart = i;
+            while (i < content.length() && !Character.isWhitespace(content.charAt(i))) {
+                i++;
+            }
+            
+            String currentWord = content.substring(wordStart, i);
+            currentWordCount++;
+            
+            // If this is the word we want to replace
+            if (currentWordCount == wordIndex) {
+                result.append(replacement);
+            } else {
+                result.append(currentWord);
+            }
+        }
+        
+        return result.toString();
     }
 
     // Public methods for external control

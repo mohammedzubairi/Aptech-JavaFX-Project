@@ -1,3 +1,31 @@
+/**
+ * File Mana - Modern Text Editor
+ * Main Application Entry Point
+ * 
+ * This class serves as the primary entry point for the File Mana text editor application.
+ * It extends JavaFX Application and handles the complete application lifecycle including
+ * initialization, UI setup, theme application, icon management, and graceful shutdown.
+ * 
+ * Key Responsibilities:
+ * - Application initialization and JavaFX stage setup
+ * - CSS theme loading and application
+ * - Icon management for title bars and taskbar
+ * - Graceful shutdown handling with unsaved changes detection
+ * - Dialog styling and theming utilities
+ * 
+ * Architecture Pattern: Entry Point / Bootstrap
+ * - Initializes the main EditorController (MVC Controller)
+ * - Sets up the primary scene and stage
+ * - Provides static utilities for dialog theming
+ * 
+ * @author NAJM ALDEEN MOHAMMED SALEH HAMOD AL-ZORQAH
+ * @student_id Student1554163
+ * @course Advanced Java Programming with JavaFX
+ * @institution Aptech Computer Education
+ * @university Alnasser University
+ * @version 1.0
+ * @since 2025-05-20
+ */
 package com.codemavriks.aptech;
 
 import javafx.application.Application;
@@ -8,21 +36,35 @@ import javafx.scene.image.Image;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Dialog;
 
+/**
+ * Main Application class for File Mana - Modern Text Editor
+ * 
+ * This class bootstraps the entire application and manages the primary JavaFX stage.
+ * It follows the JavaFX Application lifecycle pattern and provides centralized
+ * utilities for theming and icon management across the application.
+ */
 public class MainApp extends Application {
+    // Main controller that coordinates all application components
     private EditorController editorController;
+    
+    // Static resources for consistent theming and branding
     private static String cssPath;
     private static Image titleBarIcon;
     private static Image taskbarIcon;
 
+    /**
+     * Primary application initialization method called by JavaFX framework.
+     * Sets up the entire application UI, applies theming, and configures event handlers.
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Store CSS path for use in dialogs
+        // Store CSS path for use in dialogs throughout the application
         cssPath = getClass().getResource("/com/codemavriks/aptech/styles/modern-theme.css").toExternalForm();
         
-        // Load icons
+        // Load application icons for different contexts
         loadIcons();
         
-        // Create the main editor controller
+        // Create the main editor controller (MVC pattern)
         editorController = new EditorController();
         
         // Create scene with responsive sizing
@@ -43,7 +85,7 @@ public class MainApp extends Application {
         // Set application icons
         setStageIcons(primaryStage);
         
-        // Handle application close
+        // Handle application close with unsaved changes detection
         primaryStage.setOnCloseRequest(event -> {
             // Check for unsaved changes
             if (editorController.hasUnsavedChanges()) {
@@ -75,7 +117,6 @@ public class MainApp extends Application {
                                 });
                             }
                         });
-                        // Trigger save
                         return; // Don't close yet, wait for save completion
                     } else if (result.get() == cancelButton) {
                         event.consume(); // Cancel the close operation
@@ -98,6 +139,10 @@ public class MainApp extends Application {
         });
     }
 
+    /**
+     * Loads application icons from resources.
+     * Uses two different icon variants for different contexts.
+     */
     private void loadIcons() {
         try {
             // Load title bar icon (black logo for title bars and dialogs)
@@ -114,6 +159,10 @@ public class MainApp extends Application {
         }
     }
 
+    /**
+     * Sets appropriate icons for the main application stage.
+     * Order matters: title bar icon first, then taskbar icon.
+     */
     private void setStageIcons(Stage stage) {
         if (titleBarIcon != null) {
             stage.getIcons().add(titleBarIcon); // Title bar icon (black logo)
@@ -124,7 +173,8 @@ public class MainApp extends Application {
     }
 
     /**
-     * Apply dark theme to any dialog and set the appropriate icon
+     * Apply dark theme to any dialog and set the appropriate icon.
+     * Static utility method for consistent theming across all dialogs.
      */
     public static void applyDarkThemeToDialog(Dialog<?> dialog) {
         if (cssPath != null && dialog.getDialogPane() != null) {
@@ -144,7 +194,7 @@ public class MainApp extends Application {
     }
 
     /**
-     * Set icon for dialog windows
+     * Set icon for dialog windows using the title bar icon (black version).
      */
     public static void setDialogIcon(Dialog<?> dialog) {
         if (titleBarIcon != null && dialog.getDialogPane().getScene() != null && 
@@ -156,13 +206,17 @@ public class MainApp extends Application {
     }
 
     /**
-     * Apply dark theme to any alert and set the appropriate icon
+     * Convenience method to apply dark theme to Alert dialogs specifically.
      */
     public static void applyDarkThemeToAlert(Alert alert) {
         applyDarkThemeToDialog(alert);
         setDialogIcon(alert);
     }
 
+    /**
+     * Application cleanup method called during shutdown.
+     * Ensures proper cleanup of all resources and services.
+     */
     @Override
     public void stop() throws Exception {
         // Ensure proper cleanup
@@ -172,6 +226,10 @@ public class MainApp extends Application {
         super.stop();
     }
 
+    /**
+     * Main method - Application entry point.
+     * Launches the JavaFX application.
+     */
     public static void main(String[] args) {
         launch(args);
     }
