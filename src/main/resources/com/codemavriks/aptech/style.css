@@ -1,0 +1,53 @@
+/* Cursor-like Dark Theme for Aptech */
+.root {
+    -fx-background-color: #181A20;
+    -fx-text-fill: #E3E6EB;
+}
+
+.header {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #E3E6EB;
+    -fx-padding: 8 0 12 0;
+}
+
+.text-area, .text-field, .list-view {
+    -fx-background-color: #23242B;
+    -fx-control-inner-background: #23242B;
+    -fx-text-fill: #E3E6EB;
+    -fx-font-family: 'Consolas', monospace;
+    -fx-font-size: 14px;
+    -fx-border-color: #2D2F36;
+    -fx-border-radius: 4;
+}
+
+.button {
+    -fx-background-color: #23242B, linear-gradient(#23242B 0%, #23242B 100%);
+    -fx-text-fill: #E3E6EB;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-padding: 8 16 8 16;
+    -fx-border-color: #2D2F36;
+    -fx-border-width: 1;
+}
+
+.button:hover {
+    -fx-background-color: #2D2F36;
+}
+
+.status {
+    -fx-text-fill: #7ED957;
+    -fx-font-size: 13px;
+    -fx-padding: 8 0 0 0;
+}
+
+.scroll-pane, .scroll-bar {
+    -fx-background-color: #23242B;
+}
+
+.list-view {
+    -fx-background-insets: 0;
+    -fx-border-color: #2D2F36;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+} 

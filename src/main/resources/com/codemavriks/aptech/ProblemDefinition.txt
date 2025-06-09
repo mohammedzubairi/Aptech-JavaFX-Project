@@ -1,0 +1,3 @@
+Problem Definition
+
+Write a program in Java which should create a file and data in it. Once the data added in the file, another file must be created which should display the reverse of the data present in it. Next it must compare the data of both file and must check whether the content are same or not. The data of the first file must be display on the App screen and then it must extract the word and replace it with other. The position and data to be altered must be asked by the user. Once the data is replaced the content of the file must be changed and last the data of the first file must be converted in to byte codes. 

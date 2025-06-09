@@ -1,0 +1,12 @@
+Task Sheet
+
+Task: File creation, Reversing the content, Extracting, Replacement
+
+- File creation and content addition
+- Reverse content and save to another file
+- Compare files
+- Extract and replace word
+- Convert content to byte codes
+
+Status: __________________
+Remarks: __________________ 

@@ -1,0 +1,9 @@
+Algorithms
+
+1. File Creation and Writing
+2. Reversing File Content
+3. Comparing Files
+4. Extracting and Replacing Word
+5. Converting Content to Byte Codes
+
+(Each algorithm will be described in the project report with code comments.) 
