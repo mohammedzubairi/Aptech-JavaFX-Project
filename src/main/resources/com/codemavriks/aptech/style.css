@@ -1,4 +1,15 @@
-/* Cursor-like Dark Theme for Aptech */
+/* Legacy CSS file - redirects to modern theme */
+/* This file is kept for backward compatibility */
+
+@import url("styles/modern-theme.css");
+
+/* Additional legacy styles if needed */
+.legacy-support {
+    -fx-background-color: #181A20;
+    -fx-text-fill: #CCCCCC;
+}
+
+/* Cursor-like Dark Theme */
 .root {
     -fx-background-color: #181A20;
     -fx-text-fill: #E3E6EB;

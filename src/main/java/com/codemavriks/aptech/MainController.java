@@ -5,11 +5,31 @@ import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import java.io.*;
 
+/**
+ * @deprecated This class has been replaced by the new modular architecture.
+ * Use EditorController with TextEditor, SidePanel, and FileNavigator components instead.
+ * 
+ * The new architecture provides:
+ * - Better separation of concerns
+ * - Modular, reusable components
+ * - Modern UI with VSCode-like file navigator
+ * - Auto-save functionality
+ * - Responsive design
+ * - Better error handling
+ * 
+ * @see EditorController
+ * @see com.codemavriks.aptech.components.TextEditor
+ * @see com.codemavriks.aptech.components.SidePanel
+ * @see com.codemavriks.aptech.components.FileNavigator
+ * @see com.codemavriks.aptech.services.FileService
+ */
+@Deprecated
 public class MainController {
     private static final String CREATED_FILES_DIR = "Created files/";
-    private static final String ORIGINAL_FILE = CREATED_FILES_DIR + "original.txt";
-    private static final String REVERSED_FILE = CREATED_FILES_DIR + "reversed.txt";
-    private static final String BYTECODES_FILE = CREATED_FILES_DIR + "bytecodes.txt";
+    // Remove hardcoded file constants as we'll use dynamic naming
+    
+    // Add field to store current file base name
+    private String currentFileBaseName = null;
 
     @FXML private TextArea fileContentInputArea;
     @FXML private TextArea fileDisplayArea;
@@ -46,8 +66,15 @@ public class MainController {
     }
 
     /**
-     * Handles file creation and content addition.
-     * Saves the content from the TextArea to a file named 'original.txt'.
+     * Utility method to generate file paths based on base name and type
+     */
+    private String getFilePath(String baseName, String type) {
+        return CREATED_FILES_DIR + baseName + "-" + type + ".txt";
+    }
+
+    /**
+     * Handles file creation with new naming convention.
+     * Creates three files simultaneously: baseName-org.txt, baseName-rev.txt, baseName-byte.txt
      */
     @FXML
     private void handleCreateFile() {
@@ -56,29 +83,67 @@ public class MainController {
             statusLabel.setText("Please enter some content to save.");
             return;
         }
+        
+        if (currentFileBaseName == null || currentFileBaseName.isEmpty()) {
+            statusLabel.setText("Please create a file set first using 'Create File' button.");
+            return;
+        }
+        
         File dir = new File(CREATED_FILES_DIR);
         if (!dir.exists()) dir.mkdirs();
-        File file = new File(ORIGINAL_FILE);
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write(content);
-            statusLabel.setText("File 'original.txt' created and content added.");
+        
+        try {
+            // Create original file
+            File originalFile = new File(getFilePath(currentFileBaseName, "org"));
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(originalFile))) {
+                writer.write(content);
+            }
+            
+            // Create reversed file
+            String reversedContent = new StringBuilder(content).reverse().toString();
+            File reversedFile = new File(getFilePath(currentFileBaseName, "rev"));
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(reversedFile))) {
+                writer.write(reversedContent);
+            }
+            
+            // Create byte codes file
+            byte[] bytes = content.getBytes();
+            StringBuilder byteCodes = new StringBuilder();
+            for (byte b : bytes) {
+                byteCodes.append(b).append(" ");
+            }
+            File byteFile = new File(getFilePath(currentFileBaseName, "byte"));
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(byteFile))) {
+                writer.write(byteCodes.toString().trim());
+            }
+            
+            statusLabel.setText("File set '" + currentFileBaseName + "' created with all three variants.");
+            populateFileList();
+            
         } catch (IOException e) {
-            statusLabel.setText("Error writing to file: " + e.getMessage());
+            statusLabel.setText("Error creating files: " + e.getMessage());
         }
     }
 
     /**
      * Handles reversing the file content and saving to another file.
-     * Reads from 'original.txt', reverses the content, and saves to 'reversed.txt'.
+     * Now works with the new naming convention.
      */
     @FXML
     private void handleReverseFile() {
-        File inputFile = new File(ORIGINAL_FILE);
-        File outputFile = new File(REVERSED_FILE);
-        if (!inputFile.exists()) {
-            statusLabel.setText("'original.txt' does not exist. Please create the file first.");
+        if (currentFileBaseName == null || currentFileBaseName.isEmpty()) {
+            statusLabel.setText("No file set selected. Please create or select a file set first.");
             return;
         }
+        
+        File inputFile = new File(getFilePath(currentFileBaseName, "org"));
+        File outputFile = new File(getFilePath(currentFileBaseName, "rev"));
+        
+        if (!inputFile.exists()) {
+            statusLabel.setText("Original file does not exist. Please create the file set first.");
+            return;
+        }
+        
         try (BufferedReader reader = new BufferedReader(new FileReader(inputFile))) {
             StringBuilder content = new StringBuilder();
             String line;
@@ -92,7 +157,8 @@ public class MainController {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
                 writer.write(reversed);
             }
-            statusLabel.setText("Content reversed and saved to 'reversed.txt'.");
+            statusLabel.setText("Content reversed and saved to '" + currentFileBaseName + "-rev.txt'.");
+            populateFileList();
         } catch (IOException e) {
             statusLabel.setText("Error processing files: " + e.getMessage());
         }
@@ -100,16 +166,23 @@ public class MainController {
 
     /**
      * Handles comparing the original and reversed files.
-     * Compares 'original.txt' and 'reversed.txt' and updates the status.
+     * Updated to work with new naming convention.
      */
     @FXML
     private void handleCompareFiles() {
-        File file1 = new File(ORIGINAL_FILE);
-        File file2 = new File(REVERSED_FILE);
-        if (!file1.exists() || !file2.exists()) {
-            statusLabel.setText("Both 'original.txt' and 'reversed.txt' must exist to compare.");
+        if (currentFileBaseName == null || currentFileBaseName.isEmpty()) {
+            statusLabel.setText("No file set selected. Please create or select a file set first.");
             return;
         }
+        
+        File file1 = new File(getFilePath(currentFileBaseName, "org"));
+        File file2 = new File(getFilePath(currentFileBaseName, "rev"));
+        
+        if (!file1.exists() || !file2.exists()) {
+            statusLabel.setText("Both original and reversed files must exist to compare.");
+            return;
+        }
+        
         try {
             String content1 = readFileContent(file1);
             String content2 = readFileContent(file2);
@@ -139,20 +212,28 @@ public class MainController {
 
     /**
      * Handles extracting a word at a given position and replacing it.
+     * Updated to work with new naming convention.
      */
     @FXML
     private void handleExtractReplace() {
-        File file = new File(ORIGINAL_FILE);
-        if (!file.exists()) {
-            statusLabel.setText("'original.txt' does not exist. Please create the file first.");
+        if (currentFileBaseName == null || currentFileBaseName.isEmpty()) {
+            statusLabel.setText("No file set selected. Please create or select a file set first.");
             return;
         }
+        
+        File file = new File(getFilePath(currentFileBaseName, "org"));
+        if (!file.exists()) {
+            statusLabel.setText("Original file does not exist. Please create the file set first.");
+            return;
+        }
+        
         String posText = extractPositionField.getText();
         String replacement = replacementField.getText();
         if (posText == null || posText.isEmpty() || replacement == null || replacement.isEmpty()) {
             statusLabel.setText("Please enter both position and replacement.");
             return;
         }
+        
         int pos;
         try {
             pos = Integer.parseInt(posText);
@@ -160,6 +241,7 @@ public class MainController {
             statusLabel.setText("Position must be a valid integer.");
             return;
         }
+        
         try {
             String content = readFileContent(file).trim();
             String[] words = content.split("\\s+");
@@ -181,16 +263,23 @@ public class MainController {
 
     /**
      * Handles converting file content to byte codes and saving.
-     * Reads from 'original.txt', converts content to byte codes, saves to 'bytecodes.txt', and updates the status.
+     * Updated to work with new naming convention.
      */
     @FXML
     private void handleByteCode() {
-        File inputFile = new File(ORIGINAL_FILE);
-        File outputFile = new File(BYTECODES_FILE);
-        if (!inputFile.exists()) {
-            statusLabel.setText("'original.txt' does not exist. Please create the file first.");
+        if (currentFileBaseName == null || currentFileBaseName.isEmpty()) {
+            statusLabel.setText("No file set selected. Please create or select a file set first.");
             return;
         }
+        
+        File inputFile = new File(getFilePath(currentFileBaseName, "org"));
+        File outputFile = new File(getFilePath(currentFileBaseName, "byte"));
+        
+        if (!inputFile.exists()) {
+            statusLabel.setText("Original file does not exist. Please create the file set first.");
+            return;
+        }
+        
         try {
             String content = readFileContent(inputFile);
             byte[] bytes = content.getBytes();
@@ -201,7 +290,8 @@ public class MainController {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
                 writer.write(byteCodes.toString().trim());
             }
-            statusLabel.setText("File content converted to byte codes and saved to 'bytecodes.txt'.");
+            statusLabel.setText("File content converted to byte codes and saved to '" + currentFileBaseName + "-byte.txt'.");
+            populateFileList();
         } catch (IOException e) {
             statusLabel.setText("Error processing files: " + e.getMessage());
         }
@@ -209,17 +299,23 @@ public class MainController {
 
     @FXML
     private void handleShowFirstFile() {
-        File file = new File(ORIGINAL_FILE);
-        if (!file.exists()) {
-            statusLabel.setText("'original.txt' does not exist. Please create the file first.");
+        if (currentFileBaseName == null || currentFileBaseName.isEmpty()) {
+            statusLabel.setText("No file set selected. Please create or select a file set first.");
             return;
         }
+        
+        File file = new File(getFilePath(currentFileBaseName, "org"));
+        if (!file.exists()) {
+            statusLabel.setText("Original file does not exist. Please create the file set first.");
+            return;
+        }
+        
         try {
             String content = readFileContent(file);
             // Show in a new Alert dialog (new screen)
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("First File Content");
-            alert.setHeaderText("Content of the First File");
+            alert.setHeaderText("Content of " + currentFileBaseName + "-org.txt");
             TextArea area = new TextArea(content);
             area.setEditable(false);
             area.setWrapText(true);
@@ -235,23 +331,67 @@ public class MainController {
     @FXML
     private void handleCreateFilePopup() {
         Dialog<String> dialog = new TextInputDialog();
-        dialog.setTitle("Create New File");
-        dialog.setHeaderText("Enter the name for the new .txt file:");
-        dialog.setContentText("File name:");
-        ((TextInputDialog) dialog).getEditor().setPromptText("example.txt");
+        dialog.setTitle("Create New File Set");
+        dialog.setHeaderText("Enter the base name for the new file set:");
+        dialog.setContentText("Base name (without extension):");
+        ((TextInputDialog) dialog).getEditor().setPromptText("Ahmed");
         dialog.getDialogPane().getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
-        dialog.showAndWait().ifPresent(name -> {
-            if (name == null || name.trim().isEmpty() || !name.endsWith(".txt")) {
-                statusLabel.setText("Invalid file name. Must end with .txt");
+        
+        dialog.showAndWait().ifPresent(baseName -> {
+            if (baseName == null || baseName.trim().isEmpty()) {
+                statusLabel.setText("Invalid base name. Please enter a valid name.");
                 return;
             }
-            File file = new File(CREATED_FILES_DIR + name);
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                writer.write(fileContentInputArea.getText());
-                statusLabel.setText("File '" + name + "' created.");
+            
+            // Remove .txt extension if user accidentally added it
+            baseName = baseName.trim();
+            if (baseName.toLowerCase().endsWith(".txt")) {
+                baseName = baseName.substring(0, baseName.length() - 4);
+            }
+            
+            // Set current file base name
+            currentFileBaseName = baseName;
+            
+            String content = fileContentInputArea.getText();
+            if (content == null || content.isEmpty()) {
+                statusLabel.setText("File set '" + baseName + "' selected. Add content and click 'Create File' to generate all three files.");
+                return;
+            }
+            
+            // Create all three files immediately if content exists
+            File dir = new File(CREATED_FILES_DIR);
+            if (!dir.exists()) dir.mkdirs();
+            
+            try {
+                // Create original file
+                File originalFile = new File(getFilePath(baseName, "org"));
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(originalFile))) {
+                    writer.write(content);
+                }
+                
+                // Create reversed file
+                String reversedContent = new StringBuilder(content).reverse().toString();
+                File reversedFile = new File(getFilePath(baseName, "rev"));
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(reversedFile))) {
+                    writer.write(reversedContent);
+                }
+                
+                // Create byte codes file
+                byte[] bytes = content.getBytes();
+                StringBuilder byteCodes = new StringBuilder();
+                for (byte b : bytes) {
+                    byteCodes.append(b).append(" ");
+                }
+                File byteFile = new File(getFilePath(baseName, "byte"));
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(byteFile))) {
+                    writer.write(byteCodes.toString().trim());
+                }
+                
+                statusLabel.setText("File set '" + baseName + "' created successfully with all three variants!");
                 populateFileList();
+                
             } catch (IOException e) {
-                statusLabel.setText("Error creating file: " + e.getMessage());
+                statusLabel.setText("Error creating file set: " + e.getMessage());
             }
         });
     }
@@ -260,11 +400,25 @@ public class MainController {
     private void handleFileSelected() {
         String selected = fileListView.getSelectionModel().getSelectedItem();
         if (selected == null) return;
+        
+        // Extract base name from selected file
+        if (selected.contains("-org.txt")) {
+            currentFileBaseName = selected.replace("-org.txt", "");
+        } else if (selected.contains("-rev.txt")) {
+            currentFileBaseName = selected.replace("-rev.txt", "");
+        } else if (selected.contains("-byte.txt")) {
+            currentFileBaseName = selected.replace("-byte.txt", "");
+        } else {
+            // Handle legacy files or other formats
+            currentFileBaseName = selected.replace(".txt", "");
+        }
+        
         File file = new File(CREATED_FILES_DIR + selected);
         try {
             String content = readFileContent(file);
             fileDisplayArea.setText(content);
             saveFileButton.setVisible(false);
+            statusLabel.setText("Selected file set: " + currentFileBaseName);
         } catch (IOException e) {
             statusLabel.setText("Error reading file: " + e.getMessage());
         }

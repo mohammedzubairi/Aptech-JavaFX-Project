@@ -1,0 +1,440 @@
+/* Modern Theme CSS for Text Editor Application */
+
+/* Application Root */
+.application-root {
+    -fx-background-color: #181A20;
+    -fx-text-fill: #CCCCCC;
+    -fx-font-family: "Segoe UI", "Roboto", "Arial", sans-serif;
+    -fx-font-size: 13px;
+}
+
+/* Main Layout */
+.main-layout {
+    -fx-background-color: #181A20;
+    -fx-spacing: 0;
+}
+
+/* Text Editor Component */
+.text-editor {
+    -fx-background-color: #181A20;
+    -fx-spacing: 0;
+}
+
+.editor-menu-bar {
+    -fx-background-color: #252526;
+    -fx-border-color: transparent transparent #3C3C3C transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 0;
+}
+
+.main-text-area {
+    -fx-background-color: #1E1E1E;
+    -fx-text-fill: #CCCCCC;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 16px;
+    -fx-font-family: "Consolas", "Monaco", "Courier New", monospace;
+    -fx-font-size: 14px;
+    -fx-control-inner-background: #1E1E1E;
+}
+
+.main-text-area .content {
+    -fx-background-color: #1E1E1E;
+}
+
+.main-text-area:focused {
+    -fx-border-color: #007ACC;
+    -fx-border-width: 1px;
+    -fx-background-insets: 0;
+    -fx-background-color: #1E1E1E;
+    -fx-control-inner-background: #1E1E1E;
+}
+
+/* Text Area Scroll Pane */
+.text-area .scroll-pane {
+    -fx-background-color: #1E1E1E;
+    -fx-control-inner-background: #1E1E1E;
+}
+
+.text-area .scroll-pane .viewport {
+    -fx-background-color: #1E1E1E;
+}
+
+.text-area .scroll-pane .content {
+    -fx-background-color: #1E1E1E;
+}
+
+/* Side Panel */
+.side-panel {
+    -fx-background-color: #252526;
+    -fx-border-color: transparent #3C3C3C transparent transparent;
+    -fx-border-width: 0 1px 0 0;
+    -fx-min-width: 280px;
+    -fx-max-width: 400px;
+    -fx-pref-width: 300px;
+}
+
+.button-section {
+    -fx-background-color: #252526;
+    -fx-border-color: transparent transparent #3C3C3C transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.navigator-section {
+    -fx-background-color: #252526;
+    -fx-padding: 8px;
+}
+
+.section-title {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-padding: 8px 4px 8px 4px;
+}
+
+/* Side Panel Fields */
+.side-panel-field {
+    -fx-background-color: #1E1E1E;
+    -fx-text-fill: #CCCCCC;
+    -fx-border-color: #3C3C3C;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-padding: 8px 12px;
+    -fx-font-size: 13px;
+    -fx-min-height: 32px;
+    -fx-pref-height: 32px;
+}
+
+.side-panel-field:focused {
+    -fx-border-color: #007ACC;
+    -fx-background-color: #1E1E1E;
+}
+
+.text-field {
+    -fx-prompt-text-fill: #969696;
+}
+
+/* Side Panel Labels */
+.side-panel .label {
+    -fx-text-fill: #CCCCCC;
+    -fx-font-size: 12px;
+    -fx-font-weight: 500;
+    -fx-padding: 4px 0;
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: #3C3C3C;
+    -fx-text-fill: #CCCCCC;
+    -fx-border-color: #3C3C3C;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-padding: 8px 16px;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #464647;
+    -fx-border-color: #464647;
+}
+
+.button:pressed {
+    -fx-background-color: #2D2D30;
+}
+
+.primary-button {
+    -fx-background-color: #007ACC;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: #007ACC;
+}
+
+.primary-button:hover {
+    -fx-background-color: #005A9E;
+    -fx-border-color: #005A9E;
+}
+
+.accent-button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: #4CAF50;
+}
+
+.accent-button:hover {
+    -fx-background-color: #45A049;
+    -fx-border-color: #45A049;
+}
+
+.accent-button:disabled {
+    -fx-background-color: #3C3C3C;
+    -fx-text-fill: #969696;
+    -fx-border-color: #3C3C3C;
+    -fx-opacity: 0.6;
+}
+
+.secondary-button {
+    -fx-background-color: #FF9800;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: #FF9800;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #F57C00;
+    -fx-border-color: #F57C00;
+}
+
+.side-panel-button {
+    -fx-min-height: 36px;
+    -fx-pref-height: 36px;
+    -fx-font-weight: 500;
+}
+
+/* File Navigator */
+.file-navigator {
+    -fx-background-color: #252526;
+}
+
+.file-tree {
+    -fx-background-color: #252526;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.tree-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #CCCCCC;
+    -fx-padding: 4px 8px;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.tree-cell:selected {
+    -fx-background-color: #007ACC;
+    -fx-text-fill: #FFFFFF;
+}
+
+.tree-cell:hover {
+    -fx-background-color: #3C3C3C;
+}
+
+.file-icon {
+    -fx-font-size: 14px;
+    -fx-padding: 0 4px 0 0;
+}
+
+/* Status Label */
+.status-label {
+    -fx-text-fill: #969696;
+    -fx-font-size: 11px;
+    -fx-padding: 4px 0;
+    -fx-wrap-text: true;
+}
+
+/* Context Menu */
+.context-menu {
+    -fx-background-color: #2D2D30;
+    -fx-border-color: #3C3C3C;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+}
+
+.menu-item {
+    -fx-background-color: transparent;
+    -fx-text-fill: #CCCCCC;
+    -fx-padding: 6px 12px;
+}
+
+.menu-item:hover {
+    -fx-background-color: #007ACC;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* Dialog Styling */
+.dialog-pane, .styled-dialog {
+    -fx-background-color: #252526;
+    -fx-border-color: #3C3C3C;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: #252526;
+}
+
+.dialog-pane .content {
+    -fx-background-color: #252526;
+}
+
+.dialog-pane .button-bar {
+    -fx-background-color: #252526;
+}
+
+.styled-dialog .label {
+    -fx-text-fill: #CCCCCC;
+}
+
+.styled-dialog .text-field {
+    -fx-background-color: #1E1E1E;
+    -fx-text-fill: #CCCCCC;
+    -fx-border-color: #3C3C3C;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-padding: 8px 12px;
+}
+
+.styled-dialog .text-field:focused {
+    -fx-border-color: #007ACC;
+}
+
+.styled-dialog .button {
+    -fx-background-color: #3C3C3C;
+    -fx-text-fill: #CCCCCC;
+    -fx-border-color: #3C3C3C;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-padding: 8px 16px;
+    -fx-font-size: 13px;
+}
+
+.styled-dialog .button:hover {
+    -fx-background-color: #464647;
+    -fx-border-color: #464647;
+}
+
+.styled-dialog .button:default {
+    -fx-background-color: #007ACC;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: #007ACC;
+}
+
+.styled-dialog .button:default:hover {
+    -fx-background-color: #005A9E;
+    -fx-border-color: #005A9E;
+}
+
+/* Additional Dialog Styling */
+.alert .header-panel {
+    -fx-background-color: #252526;
+}
+
+.alert .content.label {
+    -fx-background-color: #252526;
+    -fx-text-fill: #CCCCCC;
+}
+
+.alert .header-panel .label {
+    -fx-text-fill: #CCCCCC;
+}
+
+.alert .button-bar {
+    -fx-background-color: #252526;
+}
+
+/* Text Input Dialog Styling */
+.text-input-dialog .header-panel {
+    -fx-background-color: #252526;
+}
+
+.text-input-dialog .content {
+    -fx-background-color: #252526;
+}
+
+.text-input-dialog .text-field {
+    -fx-background-color: #1E1E1E;
+    -fx-text-fill: #CCCCCC;
+    -fx-border-color: #3C3C3C;
+    -fx-prompt-text-fill: #969696;
+}
+
+/* Text Input */
+.text-input {
+    -fx-background-color: #1E1E1E;
+    -fx-text-fill: #CCCCCC;
+    -fx-border-color: #3C3C3C;
+    -fx-border-width: 1px;
+    -fx-border-radius: 3px;
+    -fx-background-radius: 3px;
+    -fx-padding: 8px 12px;
+}
+
+.text-input:focused {
+    -fx-border-color: #007ACC;
+    -fx-background-color: #1E1E1E;
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #CCCCCC;
+}
+
+/* Separator */
+.separator {
+    -fx-background-color: #3C3C3C;
+}
+
+/* Scroll Bars */
+.scroll-bar {
+    -fx-background-color: #252526;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #3C3C3C;
+    -fx-background-radius: 3px;
+    -fx-border-radius: 3px;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #464647;
+}
+
+.scroll-bar .thumb:pressed {
+    -fx-background-color: #007ACC;
+}
+
+/* Progress Indicator */
+.progress-indicator {
+    -fx-progress-color: #007ACC;
+    -fx-background-color: #252526;
+}
+
+/* Utility Classes */
+.text-bold {
+    -fx-font-weight: bold;
+}
+
+.text-italic {
+    -fx-font-style: italic;
+}
+
+.text-small {
+    -fx-font-size: 11px;
+}
+
+.text-large {
+    -fx-font-size: 16px;
+}
+
+.margin-top {
+    -fx-padding: 8px 0 0 0;
+}
+
+.margin-bottom {
+    -fx-padding: 0 0 8px 0;
+}
+
+.no-padding {
+    -fx-padding: 0;
+}
+
+.full-width {
+    -fx-max-width: 100%;
+} 
