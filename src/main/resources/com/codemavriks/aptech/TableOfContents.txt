@@ -1,9 +1,0 @@
-Table of Contents
-
-1. Certificate of Completion
-2. Table of Contents
-3. Problem Definition
-4. Algorithms
-5. Task Sheet
-6. Project Review and Monitoring Report
-7. Final Check List 
