@@ -11,6 +11,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import java.io.File;
 import javafx.scene.layout.Region;
+import javafx.stage.FileChooser;
+import javafx.scene.control.CheckBoxTreeItem;
 
 public class SidePanel extends VBox {
     private final Button newFileButton;
@@ -18,6 +20,7 @@ public class SidePanel extends VBox {
     private final TextField wordIndexField;
     private final TextField replacementField;
     private final Button replaceButton;
+    private final Button compareFilesButton;
     private final FileNavigator fileNavigator;
     private final Label statusLabel;
     private final BooleanProperty hasUnsavedChanges = new SimpleBooleanProperty(false);
@@ -29,6 +32,7 @@ public class SidePanel extends VBox {
         this.wordIndexField = new TextField();
         this.replacementField = new TextField();
         this.replaceButton = new Button("Replace Word");
+        this.compareFilesButton = new Button("Compare Files");
         this.fileNavigator = new FileNavigator(workingDirectory);
         this.statusLabel = new Label("Ready");
         
@@ -44,11 +48,13 @@ public class SidePanel extends VBox {
         newFileButton.getStyleClass().addAll("primary-button", "side-panel-button");
         saveButton.getStyleClass().addAll("accent-button", "side-panel-button");
         replaceButton.getStyleClass().addAll("secondary-button", "side-panel-button");
+        compareFilesButton.getStyleClass().addAll("secondary-button", "side-panel-button");
         
         // Set button properties
         newFileButton.setMaxWidth(Double.MAX_VALUE);
         saveButton.setMaxWidth(Double.MAX_VALUE);
         replaceButton.setMaxWidth(Double.MAX_VALUE);
+        compareFilesButton.setMaxWidth(Double.MAX_VALUE);
         
         // Bind save button state to unsaved changes
         saveButton.disableProperty().bind(hasUnsavedChanges.not());
@@ -92,7 +98,8 @@ public class SidePanel extends VBox {
             replacementLabel,
             wordIndexField,
             replacementField,
-            replaceButton
+            replaceButton,
+            compareFilesButton
         );
         
         // Status section
@@ -227,6 +234,11 @@ public class SidePanel extends VBox {
             }
         });
 
+        // Compare files button
+        compareFilesButton.setOnAction(e -> {
+            showCompareFilesDialog();
+        });
+
         // File navigator events
         fileNavigator.addFileOperationListener(new FileNavigator.FileOperationListener() {
             @Override
@@ -329,5 +341,125 @@ public class SidePanel extends VBox {
         default void onFileOpened(File file) {}
         default void onFileDeleted(File file) {}
         default void onFileRenamed(File oldFile, File newFile) {}
+    }
+
+    // Custom dialog for comparing files
+    private void showCompareFilesDialog() {
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Compare Files");
+        dialog.setHeaderText("Select 2 or 3 files to compare");
+        com.codemavriks.aptech.MainApp.applyDarkThemeToDialog(dialog);
+
+        // Create the file tree with checkboxes
+        CheckBoxTreeItem<File> rootItem = createCheckBoxFileTreeRoot();
+        TreeView<File> treeView = new TreeView<>(rootItem);
+        treeView.setShowRoot(false);
+        treeView.setCellFactory(javafx.scene.control.cell.CheckBoxTreeCell.forTreeView());
+        treeView.setPrefHeight(350);
+        treeView.setPrefWidth(400);
+
+        // Track selected files
+        ObservableList<File> selectedFiles = FXCollections.observableArrayList();
+        addCheckBoxSelectionListener(rootItem, selectedFiles);
+
+        // Compare button
+        ButtonType compareButtonType = new ButtonType("Compare", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(compareButtonType, ButtonType.CANCEL);
+        dialog.getDialogPane().setContent(treeView);
+        Button compareButton = (Button) dialog.getDialogPane().lookupButton(compareButtonType);
+        compareButton.setDisable(true);
+
+        selectedFiles.addListener((javafx.collections.ListChangeListener<File>) c -> {
+            compareButton.setDisable(selectedFiles.size() < 2 || selectedFiles.size() > 3);
+        });
+
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == compareButtonType) {
+                if (selectedFiles.size() >= 2 && selectedFiles.size() <= 3) {
+                    compareSelectedFiles(selectedFiles);
+                }
+            }
+            return null;
+        });
+
+        dialog.showAndWait();
+    }
+
+    // Helper to create a CheckBoxTreeItem file tree
+    private CheckBoxTreeItem<File> createCheckBoxFileTreeRoot() {
+        File rootDir = new File(fileNavigator != null ? fileNavigator.getWorkingDirectory() : "Created files");
+        CheckBoxTreeItem<File> rootItem = new CheckBoxTreeItem<>(rootDir);
+        rootItem.setExpanded(true);
+        for (File file : rootDir.listFiles()) {
+            if (file.isDirectory()) {
+                CheckBoxTreeItem<File> dirItem = new CheckBoxTreeItem<>(file);
+                dirItem.setExpanded(true);
+                for (File child : file.listFiles()) {
+                    if (child.isFile() && child.getName().toLowerCase().endsWith(".txt")) {
+                        dirItem.getChildren().add(new CheckBoxTreeItem<>(child));
+                    }
+                }
+                rootItem.getChildren().add(dirItem);
+            } else if (file.isFile() && file.getName().toLowerCase().endsWith(".txt")) {
+                rootItem.getChildren().add(new CheckBoxTreeItem<>(file));
+            }
+        }
+        return rootItem;
+    }
+
+    // Helper to track selected files in the tree
+    private void addCheckBoxSelectionListener(CheckBoxTreeItem<File> root, ObservableList<File> selectedFiles) {
+        for (TreeItem<File> child : root.getChildren()) {
+            if (child instanceof CheckBoxTreeItem) {
+                CheckBoxTreeItem<File> cbItem = (CheckBoxTreeItem<File>) child;
+                cbItem.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
+                    File file = cbItem.getValue();
+                    if (file.isFile()) {
+                        if (isNowSelected) {
+                            if (!selectedFiles.contains(file)) selectedFiles.add(file);
+                        } else {
+                            selectedFiles.remove(file);
+                        }
+                    }
+                });
+                // Recurse for directories
+                addCheckBoxSelectionListener(cbItem, selectedFiles);
+            }
+        }
+    }
+
+    // Compare the selected files and show result
+    private void compareSelectedFiles(ObservableList<File> files) {
+        try {
+            boolean allEqual = true;
+            String firstContent = null;
+            for (File file : files) {
+                String content = java.nio.file.Files.readString(file.toPath());
+                if (firstContent == null) {
+                    firstContent = content;
+                } else if (!firstContent.equals(content)) {
+                    allEqual = false;
+                    break;
+                }
+            }
+            Alert resultAlert = new Alert(Alert.AlertType.INFORMATION);
+            resultAlert.setTitle("File Comparison Result");
+            if (allEqual) {
+                resultAlert.setHeaderText("The files are similar");
+                resultAlert.setContentText("The contents of the selected files are identical.");
+            } else {
+                resultAlert.setHeaderText("The files are not similar");
+                resultAlert.setContentText("The contents of the selected files are different.");
+            }
+            com.codemavriks.aptech.MainApp.applyDarkThemeToAlert(resultAlert);
+            resultAlert.showAndWait();
+        } catch (Exception ex) {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setTitle("Error Comparing Files");
+            errorAlert.setHeaderText("Could not compare files");
+            errorAlert.setContentText(ex.getMessage());
+            com.codemavriks.aptech.MainApp.applyDarkThemeToAlert(errorAlert);
+            errorAlert.showAndWait();
+        }
     }
 } 

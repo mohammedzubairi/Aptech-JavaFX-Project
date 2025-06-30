@@ -567,4 +567,8 @@ public class FileNavigator extends VBox {
         default void onFileRenamed(File oldFile, File newFile) {}
         default void onNewFileRequested(String baseName) {}
     }
+
+    public String getWorkingDirectory() {
+        return workingDirectory;
+    }
 } 
