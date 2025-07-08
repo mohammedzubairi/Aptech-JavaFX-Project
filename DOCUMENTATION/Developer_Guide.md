@@ -9,9 +9,7 @@
 
 ## PROJECT IDENTIFICATION
 
-**Project Title:** File Mana - Modern Text Editor  
-**Student Name:** NAJM ALDEEN MOHAMMED SALEH HAMOD AL-ZORQAH  
-**Student ID:** Student1554163  
+**Project Title:** File Mana - Modern Text Editor
 **Course:** Advanced Java Programming with JavaFX  
 **Institution:** Aptech Computer Education  
 **University:** Alnasser University  

@@ -9,13 +9,8 @@
 
 ## PROJECT OVERVIEW
 
-**Project Title:** File Mana - Modern Text Editor  
-**Student Name:** [Student Name]  
-**Student ID:** [Student ID]  
-**Course:** Advanced Java Programming with JavaFX  
-**Supervisor:** [Supervisor Name]  
-**Review Period:** [Start Date] to [End Date]  
-**Report Date:** [Current Date]  
+**Project Title:** File Mana - Modern Text Editor
+**Course:** Advanced Java Programming with JavaFX
 
 ---
 
@@ -286,11 +281,3 @@ The File Mana project has been completed successfully, meeting all requirements 
 
 ### Appendix D: Code Review Comments
 [Link to detailed code review documentation]
-
----
-
-**Report Prepared By:** [Student Name]  
-**Reviewed By:** [Supervisor Name]  
-**Date:** [Current Date]  
-**Version:** 1.0  
-**Status:** Final 

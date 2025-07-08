@@ -399,10 +399,3 @@ END
 | File Comparison | O(n) | O(1) | Character-by-character |
 | Directory Tree | O(m) | O(m) | m = number of files |
 | Auto-save | O(n) | O(1) | Periodic execution |
-
----
-
-**Document Prepared By:** [Student Name]  
-**Date:** [Current Date]  
-**Version:** 1.0  
-**Technical Review:** [Supervisor Name] 

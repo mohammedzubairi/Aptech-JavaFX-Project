@@ -36,7 +36,7 @@ RUN ./mvnw dependency:go-offline
 # Copy the rest of the source code
 COPY src/ src/
 COPY CreatedFiles/ CreatedFiles/
-COPY report/ report/
+COPY DOCUMENTATION/ report/
 
 # Expose a volume for live code sharing (for development)
 VOLUME ["/workspace/src"]

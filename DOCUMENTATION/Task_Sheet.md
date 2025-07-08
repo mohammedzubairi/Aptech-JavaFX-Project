@@ -9,14 +9,8 @@
 
 ## PROJECT INFORMATION
 
-**Project Title:** File Mana - Modern Text Editor  
-**Student Name:** [Student Name]  
-**Student ID:** [Student ID]  
-**Course:** Advanced Java Programming with JavaFX  
-**Supervisor:** [Supervisor Name]  
-**Start Date:** [Start Date]  
-**End Date:** [End Date]  
-**Total Duration:** [Duration in weeks]  
+**Project Title:** File Mana - Modern Text Editor
+**Course:** Advanced Java Programming with JavaFX
 
 ---
 
@@ -222,10 +216,3 @@ I hereby declare that all tasks listed in this task sheet have been completed to
 I have reviewed the task completion and confirm that the project meets the required standards.
 
 **Supervisor Signature:** _________________ **Date:** _________
-
----
-
-**Document Prepared By:** [Student Name]  
-**Last Updated:** [Current Date]  
-**Version:** 1.0  
-**Status:** Final 

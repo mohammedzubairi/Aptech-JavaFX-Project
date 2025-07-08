@@ -153,11 +153,4 @@ Write a program in Java which should create a file and data in it. Once the data
 ✅ Performance meets specified requirements  
 ✅ Documentation is complete and comprehensive  
 ✅ Testing covers all major functionality  
-✅ Error handling is robust and user-friendly  
-
----
-
-**Document Prepared By:** [Student Name]  
-**Date:** [Current Date]  
-**Version:** 1.0  
-**Approved By:** [Supervisor Name] 
+✅ Error handling is robust and user-friendly

@@ -9,15 +9,12 @@
 
 ## PROJECT IDENTIFICATION
 
-**Project Title:** File Mana - Modern Text Editor  
-**Student Name:** NAJM ALDEEN MOHAMMED SALEH HAMOD AL-ZORQAH  
-**Student ID:** Student1554163  
+**Project Title:** File Mana - Modern Text Editor
 **Course:** Advanced Java Programming with JavaFX  
 **Institution:** Aptech Computer Education  
 **University:** Alnasser University  
 **Semester:** 2  
-**Project Duration:** 20-May-2025 to 10-July-2025  
-**Supervisor:** [Supervisor Name]  
+**Project Duration:** 20-May-2025 to 10-July-2025
 
 ---
 
@@ -288,11 +285,3 @@ The File Mana - Modern Text Editor project represents a comprehensive implementa
 - **User-Centric Design**: Modern, intuitive interface with excellent user experience
 
 This eProject serves as an excellent foundation for future software development endeavors and demonstrates readiness for professional software engineering roles.
-
----
-
-**Document Prepared By:** NAJM ALDEEN MOHAMMED SALEH HAMOD AL-ZORQAH  
-**Student ID:** Student1554163  
-**Date:** [Current Date]  
-**Version:** 1.0  
-**Status:** Final 

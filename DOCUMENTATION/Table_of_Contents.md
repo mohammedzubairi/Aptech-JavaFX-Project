@@ -76,11 +76,7 @@
 ## DOCUMENT INFORMATION
 
 **Document Title:** File Mana - Modern Text Editor eProject Report  
-**Document Version:** 1.0  
-**Last Updated:** [Current Date]  
-**Total Pages:** [Total Page Count]  
-**Author:** [Student Name]  
-**Supervisor:** [Supervisor Name]  
+**Document Version:** 1.0
 **Institution:** Aptech Computer Education  
 
 ---

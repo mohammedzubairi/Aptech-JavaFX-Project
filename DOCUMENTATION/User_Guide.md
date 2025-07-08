@@ -9,9 +9,7 @@
 
 ## PROJECT IDENTIFICATION
 
-**Project Title:** File Mana - Modern Text Editor  
-**Student Name:** NAJM ALDEEN MOHAMMED SALEH HAMOD AL-ZORQAH  
-**Student ID:** Student1554163  
+**Project Title:** File Mana - Modern Text Editor
 **Course:** Advanced Java Programming with JavaFX  
 **Institution:** Aptech Computer Education  
 **University:** Alnasser University  
@@ -624,11 +622,3 @@ File Mana provides a powerful yet user-friendly solution for text processing and
 - **Explore**: Experiment with different file sets and content types
 - **Customize**: Learn keyboard shortcuts for efficient operation
 - **Share**: Help others learn to use File Mana effectively
-
----
-
-**Document Prepared By:** NAJM ALDEEN MOHAMMED SALEH HAMOD AL-ZORQAH  
-**Student ID:** Student1554163  
-**Date:** [Current Date]  
-**Version:** 1.0  
-**Status:** Final 

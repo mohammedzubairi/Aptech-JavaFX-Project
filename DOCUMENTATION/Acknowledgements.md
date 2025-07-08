@@ -133,15 +133,12 @@ This project stands as a testament to the power of dedicated learning, collabora
 
 ---
 
-**Project:** File Mana - Modern Text Editor  
-**Student:** NAJM ALDEEN MOHAMMED SALEH HAMOD AL-ZORQAH  
-**Student ID:** Student1554163  
+**Project:** File Mana - Modern Text Editor
 **Course:** Advanced Java Programming with JavaFX  
 **Institution:** Aptech Computer Education  
 **University:** Alnasser University  
 **Semester:** 2  
-**Project Duration:** 20-May-2025 to 10-July-2025  
-**Date:** [Current Date]  
+**Project Duration:** 20-May-2025 to 10-July-2025   
 
 ---
 

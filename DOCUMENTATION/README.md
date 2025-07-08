@@ -4,9 +4,7 @@
 
 ## COMPLETE ACADEMIC DOCUMENTATION PACKAGE
 
-**Project:** File Mana - Modern Text Editor  
-**Student:** NAJM ALDEEN MOHAMMED SALEH HAMOD AL-ZORQAH  
-**Student ID:** Student1554163  
+**Project:** File Mana - Modern Text Editor
 **Course:** Advanced Java Programming with JavaFX  
 **Institution:** Aptech Computer Education  
 **University:** Alnasser University  
@@ -27,7 +25,6 @@
 
 | Document | Description | Status |
 |----------|-------------|--------|
-| **[Certificate of Completion](Certificate_of_Completion.md)** | Academic certification document | ✅ Complete |
 | **[Table of Contents](Table_of_Contents.md)** | Complete document index | ✅ Complete |
 | **[Problem Definition](Problem_Definition.md)** | Detailed requirements analysis | ✅ Complete |
 | **[Task Sheet](Task_Sheet.md)** | Project breakdown and completion tracking | ✅ Complete |

@@ -9,13 +9,8 @@
 
 ## PROJECT INFORMATION
 
-**Project Title:** File Mana - Modern Text Editor  
-**Student Name:** [Student Name]  
-**Student ID:** [Student ID]  
-**Course:** Advanced Java Programming with JavaFX  
-**Supervisor:** [Supervisor Name]  
-**Submission Date:** [Submission Date]  
-**Final Review Date:** [Review Date]  
+**Project Title:** File Mana - Modern Text Editor
+**Course:** Advanced Java Programming with JavaFX
 
 ---
 
@@ -395,10 +390,3 @@ I have reviewed the project deliverables and confirm that all requirements have 
 **Completed Items:** 150  
 **Completion Rate:** 100%  
 **Overall Status:** ✅ **PROJECT COMPLETE AND READY FOR SUBMISSION**
-
----
-
-**Document Prepared By:** [Student Name]  
-**Final Review Date:** [Current Date]  
-**Version:** 1.0  
-**Status:** Final - Ready for Submission 

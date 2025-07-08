@@ -314,12 +314,3 @@ The **File Mana - Modern Text Editor** project represents a complete and success
 This project serves as an excellent example of modern Java application development, showcasing both technical competency and professional software engineering practices. The implementation exceeds the original scope while maintaining focus on the core requirements, resulting in a robust, maintainable, and user-friendly application.
 
 **Final Assessment: EXCELLENT** - Project exceeds all expectations and demonstrates mastery of advanced Java programming concepts and professional development practices.
-
----
-
-**Project Completed By:** [Student Name]  
-**Institution:** Aptech Computer Education  
-**Course:** Advanced Java Programming with JavaFX  
-**Supervisor:** [Supervisor Name]  
-**Completion Date:** [Current Date]  
-**Document Version:** 1.0 - Final 
