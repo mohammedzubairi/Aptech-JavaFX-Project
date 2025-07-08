@@ -1,7 +1,0 @@
-TODO LISTS
-
-- Create demo folder
-- Add sample files
-- Test editing functionality
-- Record screen demo
-- Submit project on time
