@@ -25,13 +25,7 @@
  * - Command Pattern: Action handlers for user operations
  * - Strategy Pattern: Different file operation strategies
  * 
- * @author NAJM ALDEEN MOHAMMED SALEH HAMOD AL-ZORQAH
- * @student_id Student1554163
- * @course Advanced Java Programming with JavaFX
- * @institution Aptech Computer Education
- * @university Alnasser University
- * @version 1.0
- * @since 2025-05-20
+ * 
  */
 package com.codemavriks.aptech;
 

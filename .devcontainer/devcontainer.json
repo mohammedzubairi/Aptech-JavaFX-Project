@@ -1,0 +1,21 @@
+{
+  "name": "JavaFX DevContainer (Liberica 21)",
+  "build": {
+    "dockerfile": "../Dockerfile"
+  },
+  "settings": {
+    "java.home": "/usr/lib/jvm/bellsoft-java21-amd64",
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "mounts": [
+    "source=${localWorkspaceFolder}/src,target=/workspace/src,type=bind,consistency=cached"
+  ],
+  "extensions": [
+    "vscjava.vscode-java-pack",
+    "vscjava.vscode-maven",
+    "fwcd.java-debug",
+    "redhat.java"
+  ],
+  "postCreateCommand": "sh .devcontainer/init.sh && ./mvnw clean install && ./mvnw javafx:run",
+  "remoteUser": "root"
+} 
