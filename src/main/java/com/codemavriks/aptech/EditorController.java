@@ -484,6 +484,15 @@ public class EditorController extends HBox {
         }
     }
 
+    /**
+     * Generates a unique base name by appending a counter if the name already exists.
+     * 
+     * This method ensures that file sets don't conflict with existing ones by
+     * appending a counter in parentheses (e.g., "myfile (1)", "myfile (2)").
+     * 
+     * @param baseName The desired base name for the file set
+     * @return A unique base name that doesn't conflict with existing file sets
+     */
     private String getUniqueBaseName(String baseName) {
         String uniqueName = baseName;
         int counter = 1;
@@ -496,6 +505,19 @@ public class EditorController extends HBox {
         return uniqueName;
     }
 
+    /**
+     * Handles save operations for the current file set.
+     * 
+     * This method performs asynchronous saving to prevent UI blocking:
+     * 1. Checks if a file is currently open
+     * 2. Shows new file dialog if no file is open
+     * 3. Creates async task for file saving
+     * 4. Updates UI based on save success/failure
+     * 5. Refreshes file navigator on successful save
+     * 
+     * The save operation updates all three file variants (org, rev, byte)
+     * and runs in a background thread to maintain UI responsiveness.
+     */
     private void handleSave() {
         if (currentFileBaseName == null) {
             showNewFileDialog();
@@ -529,6 +551,15 @@ public class EditorController extends HBox {
         saveThread.start();
     }
 
+    /**
+     * Handles file selection events from the file navigator.
+     * 
+     * Updates the current file base name when a different file is selected
+     * in the file navigator. This ensures that operations like save and
+     * word replacement work with the correct file set.
+     * 
+     * @param file The selected file from the file navigator
+     */
     private void handleFileSelection(File file) {
         // Update current file base name when a file is selected
         String baseName = fileService.extractBaseName(file.getAbsolutePath());
@@ -538,6 +569,19 @@ public class EditorController extends HBox {
         }
     }
 
+    /**
+     * Handles file open operations with unsaved changes detection.
+     * 
+     * Process Flow:
+     * 1. Check for unsaved changes in current file
+     * 2. Prompt user to save/discard/cancel if changes exist
+     * 3. Load content from selected file
+     * 4. Update text editor with loaded content
+     * 5. Update current file tracking and UI state
+     * 6. Show success/error feedback
+     * 
+     * @param file The file to open in the text editor
+     */
     private void handleFileOpen(File file) {
         // Check for unsaved changes before opening new file
         if (textEditor.hasUnsavedChangesProperty().get()) {
@@ -585,6 +629,20 @@ public class EditorController extends HBox {
         }
     }
 
+    /**
+     * Handles file deletion events from the file navigator.
+     * 
+     * This method responds to file or folder deletion by:
+     * 1. Checking if the deleted item relates to the currently open file
+     * 2. Clearing the text editor if the current file set was deleted
+     * 3. Updating the current file tracking state
+     * 4. Refreshing the file navigator to reflect changes
+     * 5. Providing user feedback about the deletion
+     * 
+     * Handles both individual file deletion and entire folder deletion.
+     * 
+     * @param file The deleted file or folder
+     */
     private void handleFileDeleted(File file) {
         // If the deleted file/folder was related to the current file, clear the editor
         if (currentFileBaseName != null) {
@@ -609,6 +667,16 @@ public class EditorController extends HBox {
         sidePanel.refreshFileNavigator();
     }
 
+    /**
+     * Handles file rename events from the file navigator.
+     * 
+     * Updates the current file tracking when a file that's currently
+     * being edited gets renamed. This ensures that subsequent operations
+     * work with the correct file paths and names.
+     * 
+     * @param oldFile The original file before renaming
+     * @param newFile The file after renaming
+     */
     private void handleFileRenamed(File oldFile, File newFile) {
         // Update current file base name if the renamed file was the current file
         if (currentFileBaseName != null && oldFile.getName().contains(currentFileBaseName)) {
@@ -621,6 +689,13 @@ public class EditorController extends HBox {
         sidePanel.refreshFileNavigator();
     }
 
+    /**
+     * Shows the new file dialog by setting up a listener on the side panel.
+     * 
+     * This method creates a temporary listener that will handle the new file
+     * request when triggered from the side panel. It's used when the user
+     * attempts to save but no file is currently open.
+     */
     private void showNewFileDialog() {
         sidePanel.addSidePanelListener(new SidePanel.SidePanelListener() {
             @Override
@@ -630,6 +705,15 @@ public class EditorController extends HBox {
         });
     }
 
+    /**
+     * Shows an error dialog with consistent theming.
+     * 
+     * Creates and displays a styled error dialog that matches the application's
+     * dark theme. Used throughout the application for consistent error reporting.
+     * 
+     * @param title The title for the error dialog
+     * @param message The error message to display
+     */
     private void showErrorDialog(String title, String message) {
         Alert errorAlert = new Alert(Alert.AlertType.ERROR);
         errorAlert.setTitle(title);
@@ -642,6 +726,23 @@ public class EditorController extends HBox {
         errorAlert.showAndWait();
     }
 
+    /**
+     * Handles word replacement operations with validation and feedback.
+     * 
+     * This method performs position-based word replacement in the current document:
+     * 1. Validates that a file is currently open
+     * 2. Checks that the file contains content
+     * 3. Validates the word index is within range
+     * 4. Performs the word replacement while preserving formatting
+     * 5. Saves the changes to all file variants
+     * 6. Provides user feedback on success or failure
+     * 
+     * Word indexing is 1-based for user-friendly interaction (first word = 1).
+     * The replacement preserves original spacing and text formatting.
+     * 
+     * @param wordIndex The 1-based position of the word to replace
+     * @param replacement The new word to insert at the specified position
+     */
     private void handleWordReplacement(int wordIndex, String replacement) {
         if (currentFileBaseName == null) {
             sidePanel.updateStatus("No file is currently open");
@@ -700,7 +801,26 @@ public class EditorController extends HBox {
     }
     
     /**
-     * Replace a word at a specific position while preserving original spacing and newlines
+     * Replaces a word at a specific position while preserving original spacing and newlines.
+     * 
+     * This method performs intelligent word replacement that maintains the original
+     * document formatting, including:
+     * - Preserving all whitespace (spaces, tabs, newlines)
+     * - Maintaining original text structure and layout
+     * - Counting words based on whitespace separation
+     * - Replacing only the specific occurrence at the given position
+     * 
+     * Algorithm:
+     * 1. Iterate through the content character by character
+     * 2. Preserve all whitespace characters in their original positions
+     * 3. Extract words separated by whitespace
+     * 4. Replace the target word when the correct position is reached
+     * 5. Continue with remaining content unchanged
+     * 
+     * @param content The original text content
+     * @param wordIndex The 1-based position of the word to replace
+     * @param replacement The new word to insert
+     * @return The modified content with the word replaced and formatting preserved
      */
     private String replaceWordAtPosition(String content, int wordIndex, String replacement) {
         // Split content into words to count them
@@ -750,12 +870,35 @@ public class EditorController extends HBox {
         return result.toString();
     }
 
-    // Public methods for external control
+    // ============================================================================
+    // PUBLIC API METHODS
+    // ============================================================================
+
+    /**
+     * Enables or disables the auto-save functionality.
+     * 
+     * When disabled, auto-save will not run even if there are unsaved changes.
+     * This setting affects both the controller's auto-save timer and the
+     * file service's auto-save capabilities.
+     * 
+     * @param enabled true to enable auto-save, false to disable
+     */
     public void setAutoSaveEnabled(boolean enabled) {
         this.isAutoSaveEnabled = enabled;
         fileService.setAutoSaveEnabled(enabled);
     }
 
+    /**
+     * Shuts down the editor controller and cleans up resources.
+     * 
+     * This method performs cleanup operations:
+     * - Cancels the auto-save timer to stop background operations
+     * - Shuts down the file service and its executor
+     * - Releases any other resources held by the controller
+     * 
+     * Should be called when the application is closing or the controller
+     * is being disposed of to ensure proper resource cleanup.
+     */
     public void shutdown() {
         if (autoSaveTimer != null) {
             autoSaveTimer.cancel();
@@ -763,18 +906,44 @@ public class EditorController extends HBox {
         fileService.shutdown();
     }
 
+    /**
+     * Gets the text editor component.
+     * 
+     * Provides access to the text editor for external components that need
+     * to interact with the text editing functionality directly.
+     * 
+     * @return The TextEditor component instance
+     */
     public TextEditor getTextEditor() {
         return textEditor;
     }
 
+    /**
+     * Gets the side panel component.
+     * 
+     * Provides access to the side panel for external components that need
+     * to interact with file navigation and control functionality.
+     * 
+     * @return The SidePanel component instance
+     */
     public SidePanel getSidePanel() {
         return sidePanel;
     }
 
+    /**
+     * Gets the base name of the currently open file set.
+     * 
+     * @return The current file base name, or null if no file is open
+     */
     public String getCurrentFileBaseName() {
         return currentFileBaseName;
     }
 
+    /**
+     * Checks if there are unsaved changes in the current document.
+     * 
+     * @return true if there are unsaved changes, false otherwise
+     */
     public boolean hasUnsavedChanges() {
         return textEditor.hasUnsavedChangesProperty().get();
     }

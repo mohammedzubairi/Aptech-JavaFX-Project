@@ -88,6 +88,191 @@
           <!-- Fix the main class path (removed the incorrect /com.codemavriks.aptech part) -->
         </configuration>
       </plugin>
+
+      <!-- Maven Shade Plugin for Executable JAR -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.1</version>
+        <configuration>
+          <transformers>
+            <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+              <mainClass>com.codemavriks.aptech.MainApp</mainClass>
+            </transformer>
+          </transformers>
+          <finalName>FileMana-${project.version}</finalName>
+          <outputDirectory>${project.build.directory}</outputDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- JPackage Plugin for Native Executable -->
+      <plugin>
+        <groupId>org.panteleyev</groupId>
+        <artifactId>jpackage-maven-plugin</artifactId>
+        <version>1.6.5</version>
+        <configuration>
+          <name>FileMana</name>
+          <appVersion>${project.version}</appVersion>
+          <vendor>CodeMavriks</vendor>
+          <destination>target/installer</destination>
+          <module>com.codemavriks.aptech/com.codemavriks.aptech.MainApp</module>
+          <runtimeImage>target/image</runtimeImage>
+          <javaOptions>
+            <option>-Dfile.encoding=UTF-8</option>
+          </javaOptions>
+          <winMenu>true</winMenu>
+          <winDirChooser>true</winDirChooser>
+          <winShortcut>true</winShortcut>
+          <winPerUserInstall>false</winPerUserInstall>
+          <winUpgradeUuid>61045200-1ba0-4a52-8b10-2d8c18b0abcd</winUpgradeUuid>
+        </configuration>
+      </plugin>
+
+      <!-- Maven Javadoc Plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.6.3</version>
+        <configuration>
+          <source>21</source>
+          <target>21</target>
+          <encoding>UTF-8</encoding>
+          <docencoding>UTF-8</docencoding>
+          <charset>UTF-8</charset>
+          <locale>en_US</locale>
+          <windowTitle>File Mana - Modern Text Editor API Documentation</windowTitle>
+          <doctitle>File Mana - Modern Text Editor API Documentation</doctitle>
+          <header>&lt;b&gt;File Mana v1.0&lt;/b&gt;</header>
+          <footer>&lt;b&gt;File Mana v1.0&lt;/b&gt;</footer>
+          <bottom>
+            &lt;i&gt;Copyright © 2025 CodeMavriks. All rights reserved.&lt;/i&gt;&lt;br/&gt;
+            &lt;i&gt;Aptech Computer Education - Advanced Java Programming with JavaFX&lt;/i&gt;
+          </bottom>
+          <show>private</show>
+          <nohelp>false</nohelp>
+          <use>true</use>
+          <version>true</version>
+          <author>true</author>
+          <splitindex>true</splitindex>
+          <linksource>true</linksource>
+          <breakiterator>true</breakiterator>
+          <detectJavaApiLink>true</detectJavaApiLink>
+          <detectLinks>true</detectLinks>
+          <quiet>false</quiet>
+          <verbose>true</verbose>
+          <failOnError>false</failOnError>
+          <failOnWarnings>false</failOnWarnings>
+          <additionalJOptions>
+            <additionalJOption>-J-Dfile.encoding=UTF-8</additionalJOption>
+          </additionalJOptions>
+          <groups>
+            <group>
+              <title>Main Application</title>
+              <packages>com.codemavriks.aptech</packages>
+            </group>
+            <group>
+              <title>UI Components</title>
+              <packages>com.codemavriks.aptech.components</packages>
+            </group>
+            <group>
+              <title>Services</title>
+              <packages>com.codemavriks.aptech.services</packages>
+            </group>
+          </groups>
+          <links>
+            <link>https://docs.oracle.com/en/java/javase/21/docs/api/</link>
+            <link>https://openjfx.io/javadoc/22/</link>
+          </links>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Maven Site Plugin for better documentation integration -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>4.0.0-M13</version>
+        <configuration>
+          <locales>en</locales>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+
+  <!-- Reporting section for site generation -->
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.6.3</version>
+        <configuration>
+          <source>21</source>
+          <target>21</target>
+          <encoding>UTF-8</encoding>
+          <docencoding>UTF-8</docencoding>
+          <charset>UTF-8</charset>
+          <locale>en_US</locale>
+          <windowTitle>File Mana - Modern Text Editor API Documentation</windowTitle>
+          <doctitle>File Mana - Modern Text Editor API Documentation</doctitle>
+          <header>&lt;b&gt;File Mana v1.0&lt;/b&gt;</header>
+          <footer>&lt;b&gt;File Mana v1.0&lt;/b&gt;</footer>
+          <bottom>
+            &lt;i&gt;Copyright © 2025 CodeMavriks. All rights reserved.&lt;/i&gt;&lt;br/&gt;
+            &lt;i&gt;Aptech Computer Education - Advanced Java Programming with JavaFX&lt;/i&gt;
+          </bottom>
+          <show>private</show>
+          <nohelp>false</nohelp>
+          <use>true</use>
+          <version>true</version>
+          <author>true</author>
+          <splitindex>true</splitindex>
+          <linksource>true</linksource>
+          <breakiterator>true</breakiterator>
+          <detectJavaApiLink>true</detectJavaApiLink>
+          <detectLinks>true</detectLinks>
+          <quiet>false</quiet>
+          <verbose>true</verbose>
+          <failOnError>false</failOnError>
+          <failOnWarnings>false</failOnWarnings>
+          <additionalJOptions>
+            <additionalJOption>-J-Dfile.encoding=UTF-8</additionalJOption>
+          </additionalJOptions>
+          <groups>
+            <group>
+              <title>Main Application</title>
+              <packages>com.codemavriks.aptech</packages>
+            </group>
+            <group>
+              <title>UI Components</title>
+              <packages>com.codemavriks.aptech.components</packages>
+            </group>
+            <group>
+              <title>Services</title>
+              <packages>com.codemavriks.aptech.services</packages>
+            </group>
+          </groups>
+          <links>
+            <link>https://docs.oracle.com/en/java/javase/21/docs/api/</link>
+            <link>https://openjfx.io/javadoc/22/</link>
+          </links>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>

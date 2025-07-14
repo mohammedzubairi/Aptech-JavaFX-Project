@@ -44,12 +44,29 @@ import javafx.scene.control.Dialog;
  * utilities for theming and icon management across the application.
  */
 public class MainApp extends Application {
-    // Main controller that coordinates all application components
+    
+    /**
+     * Main controller that coordinates all application components.
+     * Manages the overall application state and component interactions.
+     */
     private EditorController editorController;
     
-    // Static resources for consistent theming and branding
+    /**
+     * Path to the CSS stylesheet for consistent application theming.
+     * Used across all dialogs and components for dark theme consistency.
+     */
     private static String cssPath;
+    
+    /**
+     * Title bar icon (black logo variant).
+     * Used for dialog title bars and window decorations.
+     */
     private static Image titleBarIcon;
+    
+    /**
+     * Taskbar icon (regular logo variant).
+     * Used for taskbar representation and application identification.
+     */
     private static Image taskbarIcon;
 
     /**
@@ -162,6 +179,8 @@ public class MainApp extends Application {
     /**
      * Sets appropriate icons for the main application stage.
      * Order matters: title bar icon first, then taskbar icon.
+     * 
+     * @param stage The stage to set icons for
      */
     private void setStageIcons(Stage stage) {
         if (titleBarIcon != null) {
@@ -175,6 +194,8 @@ public class MainApp extends Application {
     /**
      * Apply dark theme to any dialog and set the appropriate icon.
      * Static utility method for consistent theming across all dialogs.
+     * 
+     * @param dialog The dialog to apply dark theme styling to
      */
     public static void applyDarkThemeToDialog(Dialog<?> dialog) {
         if (cssPath != null && dialog.getDialogPane() != null) {
@@ -195,6 +216,8 @@ public class MainApp extends Application {
 
     /**
      * Set icon for dialog windows using the title bar icon (black version).
+     * 
+     * @param dialog The dialog to set the icon for
      */
     public static void setDialogIcon(Dialog<?> dialog) {
         if (titleBarIcon != null && dialog.getDialogPane().getScene() != null && 
@@ -207,6 +230,8 @@ public class MainApp extends Application {
 
     /**
      * Convenience method to apply dark theme to Alert dialogs specifically.
+     * 
+     * @param alert The alert dialog to apply dark theme styling to
      */
     public static void applyDarkThemeToAlert(Alert alert) {
         applyDarkThemeToDialog(alert);
@@ -229,6 +254,8 @@ public class MainApp extends Application {
     /**
      * Main method - Application entry point.
      * Launches the JavaFX application.
+     * 
+     * @param args Command line arguments passed to the application
      */
     public static void main(String[] args) {
         launch(args);
